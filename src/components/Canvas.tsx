@@ -3,15 +3,23 @@
 import { presentList } from "@/contents/presentList";
 import { Pin, RulletBtn } from "@/style/buttonStyle";
 import { Main } from "@/style/homeStyle";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Canvas() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [chance, setChance] = useState(0);
 
   useEffect(() => {
     drawRouletteWheel();
   }, []); 
+
+  useEffect(() => {
+    const savedChance = localStorage.getItem('chance');
+    if (savedChance) {
+      setChance(parseInt(savedChance, 10));
+    }
+  }, []);
   
   const drawRouletteWheel = () => {
     if(canvasRef.current) {
@@ -62,7 +70,13 @@ export default function Canvas() {
   };
 
   const rotate = () => {
-    if (isSpinning) return; // 이미 돌고 있는 중이면 클릭 무시
+    if (chance > 3) {
+      alert('3개밖에 못뽑아~');
+      return;
+    }else if(isSpinning){
+      alert('돌리는 중이야~');
+      return;
+    }
   
     setIsSpinning(true); // 돌리는 중으로 상태 변경
   
@@ -73,20 +87,27 @@ export default function Canvas() {
     if (canvasRef.current) {
       const initialTransform = canvasRef.current.style.transform;
       canvasRef.current.style.transition = 'transform 3s ease-out';
-      canvasRef.current.style.transform = `${initialTransform} rotate(-${rotate}deg)`;
+      canvasRef.current.style.transform = `${initialTransform} rotate(${rotate}deg)`; // 기존 회전값에 추가적으로 회전값 적용
+  
+      setChance(prevChance => {
+        const newChance = prevChance + 1;
+        localStorage.setItem('chance', newChance.toString());
+        return newChance;
+      });
   
       // 3초 후에 돌아가는 중이 아닌 상태로 변경
       setTimeout(() => {
         setIsSpinning(false);
         if (canvasRef.current) {
           canvasRef.current.style.transition = 'none';
+          canvasRef.current.style.transform = `${initialTransform} rotate(${360 - (ran * arc)}deg)`; // 초기 회전값으로 복원
         }
       }, 3000);
-      localStorage.setItem('ran', ran.toString());
+      alert('캡쳐해서 보내야 쓸 수 있다규')
     }
   
-    return ran;
   };
+  
   
   
 
@@ -96,7 +117,7 @@ export default function Canvas() {
     <Main>
       <Pin className="pin"></Pin>
       <canvas id="canvas" width="500" height="500" ref={canvasRef} className="canvas"></canvas>
-      <RulletBtn className="buttonOfRullet" onClick={rotate} disabled={isSpinning}>룰렛 돌리기</RulletBtn>
+      <RulletBtn className="buttonOfRullet" onClick={rotate} disabled={isSpinning || chance >= 3}>룰렛 돌리기</RulletBtn>
     </Main>
   );
 }
