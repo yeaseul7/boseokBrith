@@ -71,7 +71,7 @@ export default function Canvas() {
 
   const rotate = () => {
     if (chance > 3) {
-      alert('3개밖에 못뽑아~');
+      alert('4개밖에 못뽑아~');
       return;
     }else if(isSpinning){
       alert('돌리는 중이야~');
