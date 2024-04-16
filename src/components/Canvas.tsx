@@ -117,7 +117,7 @@ export default function Canvas() {
     <Main>
       <Pin className="pin"></Pin>
       <canvas id="canvas" width="500" height="500" ref={canvasRef} className="canvas"></canvas>
-      <RulletBtn className="buttonOfRullet" onClick={rotate} disabled={isSpinning || chance >= 3}>룰렛 돌리기</RulletBtn>
+      <RulletBtn className="buttonOfRullet" onClick={rotate} disabled={isSpinning}>룰렛 돌리기</RulletBtn>
     </Main>
   );
 }
